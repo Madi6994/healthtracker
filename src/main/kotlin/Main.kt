@@ -1,8 +1,10 @@
+import controllers.UserStore
 import models.User
 import utils.isValidInRange
 import utils.validGender
 
-var user = User()
+//val user = User()
+val userStore = UserStore()
 
 fun main(){
     println("Welcome to Health Tracker")
@@ -10,6 +12,10 @@ fun main(){
 }
 
 fun addUser(){
+
+    val user = User()
+    userStore.create(user)
+
     println("Please enter the following for the user:")
 
     print("    Name: ")
@@ -40,15 +46,16 @@ fun addUser(){
     user.gender = validGender(readLine()!!.getOrNull(0) ?: ' ')
 }
 
-fun listUser(){
-    print("The user details are: " + user)
+fun listUsers(){
+    println("The user details are: ${userStore.findAll()}")
 }
 
 fun menu(): Int{
     print("""
         |Main Menu:
         |  1. Add User
-        |  2. List User
+        |  2. List Users
+        |  3. Search by Id
         |  0. Exit
         |Please enter your option: """.trimMargin())
     return readLine()?.toIntOrNull() ?: -1
@@ -60,10 +67,31 @@ fun runApp(){
         input = menu()
         when(input) {
             1 -> addUser()
-            2 -> listUser()
-            in(3..6) -> println("Feature coming soon")
+            2 -> listUsers()
+            3 -> searchById()
+            in(4..6) -> println("Feature coming soon")
             0 -> println("Bye...")
             else -> print("Invalid Option")
         }
     } while (input != 0)
+}
+
+fun getUserById() : User?{
+    print("Enter the id of the user: ")
+    return  userStore.findOne(readLine()?.toIntOrNull() ?: -1)
+}
+
+fun searchById() {
+    val user = getUserById()
+    if (user == null)
+        println ("No user found")
+    else
+        println(user)
+}
+
+fun deleteUser(){
+    if (userStore.delete(getUserById()))
+        println ("User deleted")
+    else
+        println ("No user")
 }
